@@ -1,4 +1,4 @@
-name: Douner server CI/CD
+name: Tarotdream server CI/CD
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
       run: chmod +x gradlew
     
     - name: Build with Gradle
-      run: ./gradlew clean build
+      run: ./tarotdream/gradlew clean build
 
     # 디렉토리 생성
     - name: Make Directory
