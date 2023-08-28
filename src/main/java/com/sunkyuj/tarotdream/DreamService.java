@@ -50,6 +50,7 @@ public class DreamService {
                     .imageUrl("")
 //                    .gptResponse((String) responseMap.get("gpt_response"))
 //                    .imageUrl((String) responseMap.get("image_url"))
+//                    .imageUrl((String) responseMap.get("dream_title"))
                     .build();
 
         } catch (Exception e) {
