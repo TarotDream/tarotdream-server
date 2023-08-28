@@ -1,4 +1,4 @@
-name: Douner server CI/CD
+name: Tarotdream server CI/CD
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
