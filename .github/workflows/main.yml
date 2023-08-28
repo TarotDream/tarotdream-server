@@ -23,9 +23,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Move to /tarotdream dir
-      run: cd ./tarotdream/
-    
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
