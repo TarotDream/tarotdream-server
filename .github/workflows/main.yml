@@ -22,12 +22,15 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        
+
+    - name: Move to /tarotdream dir
+      run: cd ./tarotdream/
+    
     - name: Grant execute permission for gradlew
-      run: chmod +x ./tarotdream/gradlew
+      run: chmod +x gradlew
     
     - name: Build with Gradle
-      run: ./tarotdream/gradlew clean build
+      run: ./gradlew clean build
 
     # 디렉토리 생성
     - name: Make Directory
