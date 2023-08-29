@@ -1,5 +1,6 @@
-package com.sunkyuj.tarotdream;
+package com.sunkyuj.tarotdream.user;
 
+import com.sunkyuj.tarotdream.dream.Dream;
 import jakarta.persistence.*;
 import lombok.*;
 

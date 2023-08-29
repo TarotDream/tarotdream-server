@@ -1,4 +1,4 @@
-package com.sunkyuj.tarotdream;
+package com.sunkyuj.tarotdream.dream;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;

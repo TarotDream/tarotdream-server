@@ -1,8 +1,10 @@
-package com.sunkyuj.tarotdream;
+package com.sunkyuj.tarotdream.dream;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -10,4 +12,6 @@ import lombok.Setter;
 public class DreamResponse {
     private String gptResponse;
     private String imageUrl;
+    private String title;
+    private Timestamp created;
 }
