@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,11 +25,10 @@ public class Dream {
     @JoinColumn(name = "user_id") // FK, 연관관계의 주인
     private User user;
 
-    private String title;
-    private Timestamp created;
-    private String content;
+    private String dreamTitle;
+    private String engDreamTitle;
     private String imageUrl;
-
-
+    private String recommendedTarotCard;
+    private Timestamp created;
 
 }

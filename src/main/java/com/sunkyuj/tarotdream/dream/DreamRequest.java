@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class DreamRequest {
-    private Long userId;
+//    private Long userId;
     private String dreamStory;
 }
