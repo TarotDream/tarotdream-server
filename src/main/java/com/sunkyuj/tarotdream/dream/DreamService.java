@@ -1,6 +1,7 @@
 package com.sunkyuj.tarotdream.dream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.net.URL;
 import java.sql.Timestamp;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 @RequiredArgsConstructor
 public class DreamService {
 
@@ -26,6 +27,7 @@ public class DreamService {
         // 서버로부터 데이터 읽어오기
         StringBuilder sb = getStringBuilder(conn);
 //            HashMap<String, Object> responseMap = new ObjectMapper().readValue(sb.toString(), HashMap.class);
+//        ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         ModelGenerateResponse modelGenerateResponse = new ObjectMapper().readValue(sb.toString(), ModelGenerateResponse.class);
 
         DreamResponse dreamResponse = DreamResponse.builder()
