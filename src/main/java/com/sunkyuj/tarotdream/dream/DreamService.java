@@ -24,18 +24,13 @@ public class DreamService {
 
     public DreamResponse generate(DreamGenerateRequest dreamGenerateRequest) throws IOException {
 
-        // 서버에 데이터 전달
         JSONObject obj = new JSONObject();
         obj.put("utterance", dreamGenerateRequest.getDreamStory());
 
+        // 서버에 데이터 전달
         HttpURLConnection conn = getHttpURLConnection(obj, "/dream/generate");
         // 서버로부터 데이터 읽어오기
-        StringBuilder sb = getStringBuilder(conn);
-//            HashMap<String, Object> responseMap = new ObjectMapper().readValue(sb.toString(), HashMap.class);
-//        ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
-        ModelGenerateResponse modelGenerateResponse = new ObjectMapper().readValue(sb.toString(), ModelGenerateResponse.class);
-
-        log.info(modelGenerateResponse.toString());
+        ModelGenerateResponse modelGenerateResponse = getModelResponse(conn, ModelGenerateResponse.class);
 
         DreamResponse dreamResponse = DreamResponse.builder()
                 .dreamTitle(modelGenerateResponse.getDreamTitle())
@@ -48,41 +43,45 @@ public class DreamService {
 
         Dream dream = dreamResponse.toEntity();
         dreamRepository.save(dream);
+        dreamResponse.setDreamId(dream.getDreamId());
         return dreamResponse;
 
     }
 
     public DreamResponse regenerate(DreamRegenerateRequest dreamRegenerateRequest) throws IOException {
-        // 서버에 데이터 전달
+
         JSONObject obj = new JSONObject();
         obj.put("dream", dreamRegenerateRequest.getEngDreamTitle());
         obj.put("tarot_card", dreamRegenerateRequest.getRecommendedTarotCard());
 
+        // 서버에 데이터 전달
         HttpURLConnection conn = getHttpURLConnection(obj, "/dream/regenerate");
         // 서버로부터 데이터 읽어오기
-        StringBuilder sb = getStringBuilder(conn);
-//            HashMap<String, Object> responseMap = new ObjectMapper().readValue(sb.toString(), HashMap.class);
-        ModelRegenerateResponse modelResponse = new ObjectMapper().readValue(sb.toString(), ModelRegenerateResponse.class);
+        ModelRegenerateResponse modelRegenerateResponse = getModelResponse(conn, ModelRegenerateResponse.class);
 
+        String newImageUrl = modelRegenerateResponse.getImageUrl();
         DreamResponse dreamResponse = DreamResponse.builder()
-                .imageUrl(modelResponse.getImageUrl())
+                .imageUrl(newImageUrl)
                 .created(new Timestamp(System.currentTimeMillis()))
                 .build();
 
-        Dream dream = dreamResponse.toEntity();
-//        dreamRepository.save(dream); // TODO: dream_id 로 dream 불러와서 수정후 save
+        Dream dream = dreamRepository.findById(dreamRegenerateRequest.getDreamId());
+        dream.setImageUrl(newImageUrl);
+        dreamRepository.save(dream);
+
         return dreamResponse;
     }
 
-    private StringBuilder getStringBuilder(HttpURLConnection conn) throws IOException {
+    private <T> T getModelResponse(HttpURLConnection conn, Class<T> valueType) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         StringBuilder sb = new StringBuilder();
         String line = null;
         while ((line = br.readLine()) != null) { // 읽을 수 있을 때 까지 반복
             sb.append(line);
         }
-        return sb;
+        return new ObjectMapper().readValue(sb.toString(), valueType);
     }
+
 
     private HttpURLConnection getHttpURLConnection(JSONObject jsonObject, String path) throws IOException {
         URL url = new URL(flaskUrl+path);
@@ -99,7 +98,4 @@ public class DreamService {
         bw.close();
         return conn;
     }
-
-
-
 }

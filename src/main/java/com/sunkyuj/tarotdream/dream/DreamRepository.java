@@ -11,5 +11,8 @@ public class DreamRepository {
     public void save(Dream dream) {
         em.persist(dream);
     }
+    public Dream findById(Long dreamId){
+        return em.find(Dream.class, dreamId);
+    }
 
 }

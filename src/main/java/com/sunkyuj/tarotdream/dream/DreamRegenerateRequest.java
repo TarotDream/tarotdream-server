@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DreamRegenerateRequest {
-//    private Long userId;
+    private Long dreamId;
     private String engDreamTitle;
     private String recommendedTarotCard;
 }
