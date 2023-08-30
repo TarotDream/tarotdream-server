@@ -15,10 +15,6 @@ import java.util.List;
 //@NoArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ModelRegenerateResponse {
-    private String dreamTitle;
-    private String engDreamTitle;
     private String imageUrl;
-    private List<String> possibleMeanings;
-    private String recommendedTarotCard;
     private int status;
 }

@@ -1,7 +1,5 @@
 package com.sunkyuj.tarotdream.dream;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 @Getter
@@ -9,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DreamRequest {
+public class DreamGenerateRequest {
 //    private Long userId;
     private String dreamStory;
 }

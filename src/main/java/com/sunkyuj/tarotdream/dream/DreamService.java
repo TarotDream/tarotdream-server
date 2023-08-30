@@ -1,7 +1,6 @@
 package com.sunkyuj.tarotdream.dream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -23,9 +22,13 @@ public class DreamService {
     private final String flaskUrl = "http://43.201.23.0:5000";
 
 
-    public DreamResponse generate(DreamRequest dreamStory) throws IOException {
+    public DreamResponse generate(DreamGenerateRequest dreamGenerateRequest) throws IOException {
 
-        HttpURLConnection conn = getHttpURLConnection(dreamStory, "/dream/generate");
+        // 서버에 데이터 전달
+        JSONObject obj = new JSONObject();
+        obj.put("utterance", dreamGenerateRequest.getDreamStory());
+
+        HttpURLConnection conn = getHttpURLConnection(obj, "/dream/generate");
         // 서버로부터 데이터 읽어오기
         StringBuilder sb = getStringBuilder(conn);
 //            HashMap<String, Object> responseMap = new ObjectMapper().readValue(sb.toString(), HashMap.class);
@@ -49,24 +52,25 @@ public class DreamService {
 
     }
 
-    public DreamResponse regenerate(DreamRequest dreamStory) throws IOException {
-        HttpURLConnection conn = getHttpURLConnection(dreamStory, "/dream/regenerate");
+    public DreamResponse regenerate(DreamRegenerateRequest dreamRegenerateRequest) throws IOException {
+        // 서버에 데이터 전달
+        JSONObject obj = new JSONObject();
+        obj.put("dream", dreamRegenerateRequest.getEngDreamTitle());
+        obj.put("tarot_card", dreamRegenerateRequest.getRecommendedTarotCard());
+
+        HttpURLConnection conn = getHttpURLConnection(obj, "/dream/regenerate");
         // 서버로부터 데이터 읽어오기
         StringBuilder sb = getStringBuilder(conn);
 //            HashMap<String, Object> responseMap = new ObjectMapper().readValue(sb.toString(), HashMap.class);
         ModelRegenerateResponse modelResponse = new ObjectMapper().readValue(sb.toString(), ModelRegenerateResponse.class);
 
         DreamResponse dreamResponse = DreamResponse.builder()
-                .dreamTitle(modelResponse.getDreamTitle())
-                .engDreamTitle(modelResponse.getEngDreamTitle())
                 .imageUrl(modelResponse.getImageUrl())
-                .possibleMeanings(modelResponse.getPossibleMeanings())
-                .recommendedTarotCard(modelResponse.getRecommendedTarotCard())
                 .created(new Timestamp(System.currentTimeMillis()))
                 .build();
 
         Dream dream = dreamResponse.toEntity();
-        dreamRepository.save(dream);
+//        dreamRepository.save(dream); // TODO: dream_id 로 dream 불러와서 수정후 save
         return dreamResponse;
     }
 
@@ -80,7 +84,7 @@ public class DreamService {
         return sb;
     }
 
-    private HttpURLConnection getHttpURLConnection(DreamRequest dreamStory, String path) throws IOException {
+    private HttpURLConnection getHttpURLConnection(JSONObject jsonObject, String path) throws IOException {
         URL url = new URL(flaskUrl+path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -89,12 +93,8 @@ public class DreamService {
         conn.setDoInput(true); // 서버에 전달할 값이 있다면 true
         conn.setDoOutput(true); // 서버로부터 받는 값이 있다면 true
 
-        // 서버에 데이터 전달
-        JSONObject obj = new JSONObject();
-        obj.put("utterance", dreamStory.getDreamStory());
-
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-        bw.write(obj.toString()); // 버퍼에 담기
+        bw.write(jsonObject.toString()); // 버퍼에 담기
         bw.flush(); // 버퍼에 담긴 데이터 전달
         bw.close();
         return conn;

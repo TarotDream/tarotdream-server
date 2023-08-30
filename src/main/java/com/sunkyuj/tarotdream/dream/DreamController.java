@@ -14,14 +14,14 @@ public class DreamController {
     private final DreamService dreamService;
 
     @PostMapping("/generate")
-    public DreamResponse generateDream(@RequestBody DreamRequest dreamStory) throws IOException {
+    public DreamResponse generateDream(@RequestBody DreamGenerateRequest dreamGenerateRequest) throws IOException {
 //        String dreamStory = "The mountain spirit suddenly appeared and gave me a peach. Please interpret this dream.";
-        return dreamService.generate(dreamStory);
+        return dreamService.generate(dreamGenerateRequest);
     }
     @PostMapping("/regenerate")
-    public DreamResponse regenerateDream(@RequestBody DreamRequest dreamStory) throws IOException {
+    public DreamResponse regenerateDream(@RequestBody DreamRegenerateRequest dreamRegenerateRequest) throws IOException {
 //        String dreamStory = "The mountain spirit suddenly appeared and gave me a peach. Please interpret this dream.";
-        return dreamService.regenerate(dreamStory);
+        return dreamService.regenerate(dreamRegenerateRequest);
     }
 
 
