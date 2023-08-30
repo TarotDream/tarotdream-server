@@ -18,5 +18,6 @@ public class ModelGenerateResponse {
     private String imageUrl;
     private List<String> possibleMeanings;
     private String recommendedTarotCard;
+    private String message;
     private int status;
 }
