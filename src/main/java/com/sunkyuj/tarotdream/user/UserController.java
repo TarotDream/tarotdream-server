@@ -1,5 +1,10 @@
 package com.sunkyuj.tarotdream.user;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +18,20 @@ import java.sql.Timestamp;
 public class UserController {
     private final UserRepository userRepository;
 
+    @Operation(summary = "로그인", description = "로그인을 하여 회원 인증을 한다", tags = { "User" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = Long.class)))
+    })
     @PostMapping("/login")
     public Long login(@RequestBody UserLoginRequest userLoginRequest ){
         User user = userRepository.findByName(userLoginRequest.getName());
         return user.getId();
     }
 
+    @Operation(summary = "회원가입", description = "회원을 등록한다", tags = { "User" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = Long.class)))
+    })
     @PostMapping("/register")
     public Long register(@RequestBody UserRegisterRequest userRegisterRequest ){
         User user = User.builder()
