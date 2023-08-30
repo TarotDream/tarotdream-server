@@ -30,6 +30,7 @@ public class Dream {
     private String engDreamTitle;
 
     @Lob
+    @Column(columnDefinition = "blob")
     private byte[] imageUrl;
 
     private String recommendedTarotCard;
