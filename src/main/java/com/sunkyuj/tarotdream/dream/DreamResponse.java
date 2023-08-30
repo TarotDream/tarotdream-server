@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 @Builder
 public class DreamResponse {
+    private Long dreamId;
     private String dreamTitle;
     private String engDreamTitle;
     private String imageUrl;
@@ -24,7 +25,7 @@ public class DreamResponse {
         return Dream.builder()
                 .dreamTitle(dreamTitle)
                 .engDreamTitle(engDreamTitle)
-                .imageUrl(imageUrl.getBytes())
+                .imageUrl(imageUrl)
                 .recommendedTarotCard(recommendedTarotCard)
                 .created(created)
                 .build();

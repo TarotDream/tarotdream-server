@@ -30,8 +30,8 @@ public class Dream {
     private String engDreamTitle;
 
     @Lob
-    @Column(columnDefinition = "blob")
-    private byte[] imageUrl;
+    @Column(columnDefinition = "text")
+    private String imageUrl;
 
     private String recommendedTarotCard;
     private Timestamp created;
