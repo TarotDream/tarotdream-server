@@ -16,5 +16,6 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ModelRegenerateResponse {
     private String imageUrl;
+    private String message;
     private int status;
 }
