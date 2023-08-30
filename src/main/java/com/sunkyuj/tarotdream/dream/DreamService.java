@@ -3,6 +3,7 @@ package com.sunkyuj.tarotdream.dream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import java.sql.Timestamp;
 @Service
 @Transactional(readOnly = false)
 @RequiredArgsConstructor
+@Slf4j
 public class DreamService {
 
     private final DreamRepository dreamRepository;
@@ -29,6 +31,8 @@ public class DreamService {
 //            HashMap<String, Object> responseMap = new ObjectMapper().readValue(sb.toString(), HashMap.class);
 //        ObjectMapper objectMapper = new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
         ModelGenerateResponse modelGenerateResponse = new ObjectMapper().readValue(sb.toString(), ModelGenerateResponse.class);
+
+        log.info(modelGenerateResponse.toString());
 
         DreamResponse dreamResponse = DreamResponse.builder()
                 .dreamTitle(modelGenerateResponse.getDreamTitle())

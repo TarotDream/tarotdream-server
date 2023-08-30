@@ -4,6 +4,7 @@ import com.sunkyuj.tarotdream.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Blob;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,10 @@ public class Dream {
 
     private String dreamTitle;
     private String engDreamTitle;
-    private String imageUrl;
+
+    @Lob
+    private byte[] imageUrl;
+
     private String recommendedTarotCard;
     private Timestamp created;
 

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Blob;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class DreamResponse {
         return Dream.builder()
                 .dreamTitle(dreamTitle)
                 .engDreamTitle(engDreamTitle)
-                .imageUrl(imageUrl)
+                .imageUrl(imageUrl.getBytes())
                 .recommendedTarotCard(recommendedTarotCard)
                 .created(created)
                 .build();
