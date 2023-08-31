@@ -32,6 +32,7 @@ public class DreamController {
         List<DreamResponse> dreamResponseList = new ArrayList<>();
         for (Dream dream : dreams) {
             DreamResponse dreamResponse = DreamResponse.builder()
+                    .dreamId(dream.getDreamId())
                     .dreamTitle(dream.getDreamTitle())
                     .engDreamTitle(dream.getEngDreamTitle())
                     .imageUrl(dream.getImageUrl())
