@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import com.sunkyuj.tarotdream.utils.ApiResult;
+import com.sunkyuj.tarotdream.utils.ApiUtils;
 
 import java.sql.Timestamp;
 
@@ -23,9 +25,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = Long.class)))
     })
     @PostMapping("/login")
-    public Long login(@RequestBody UserLoginRequest userLoginRequest ){
+    public ApiResult<Long> login(@RequestBody UserLoginRequest userLoginRequest ){
         User user = userRepository.findByName(userLoginRequest.getName());
-        return user.getId();
+        return ApiUtils.success(user.getId());
     }
 
     @Operation(summary = "회원가입", description = "회원을 등록한다", tags = { "User" })
@@ -33,12 +35,13 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = Long.class)))
     })
     @PostMapping("/register")
-    public Long register(@RequestBody UserRegisterRequest userRegisterRequest ){
+    public ApiResult<Long> register(@RequestBody UserRegisterRequest userRegisterRequest ){
         User user = User.builder()
                 .name(userRegisterRequest.getName())
                 .password(userRegisterRequest.getPassword())
                 .created(new Timestamp(System.currentTimeMillis()))
                 .build();
-        return userRepository.save(user);
+        Long userId = userRepository.save(user);
+        return ApiUtils.success(userId);
     }
 }
