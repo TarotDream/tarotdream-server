@@ -19,5 +19,5 @@ public class ModelGenerateResponse {
     private List<String> possibleMeanings;
     private String recommendedTarotCard;
     private String message;
-    private int status;
+//    private int status;
 }

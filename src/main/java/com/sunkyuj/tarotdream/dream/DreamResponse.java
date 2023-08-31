@@ -19,7 +19,7 @@ public class DreamResponse {
     private List<String> possibleMeanings;
     private String recommendedTarotCard;
     private Timestamp created;
-    private int status;
+//    private int status;
 
     public Dream toEntity(){
         return Dream.builder()

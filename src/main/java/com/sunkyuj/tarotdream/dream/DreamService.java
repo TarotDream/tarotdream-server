@@ -11,6 +11,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = false)
@@ -21,8 +23,10 @@ public class DreamService {
     private final DreamRepository dreamRepository;
     private final String flaskUrl = "http://43.201.23.0:5000";
 
-
-    public DreamResponse generate(DreamGenerateRequest dreamGenerateRequest) throws IOException {
+    public List<Dream> findDreams(){
+        return dreamRepository.findAll();
+    }
+    public Dream generate(DreamGenerateRequest dreamGenerateRequest) throws IOException {
 
         JSONObject obj = new JSONObject();
         obj.put("utterance", dreamGenerateRequest.getDreamStory());
@@ -31,24 +35,24 @@ public class DreamService {
         HttpURLConnection conn = getHttpURLConnection(obj, "/dream/generate");
         // 서버로부터 데이터 읽어오기
         ModelGenerateResponse modelGenerateResponse = getModelResponse(conn, ModelGenerateResponse.class);
+        Timestamp curTime = new Timestamp(System.currentTimeMillis());
 
-        DreamResponse dreamResponse = DreamResponse.builder()
+        Dream dream = Dream.builder()
                 .dreamTitle(modelGenerateResponse.getDreamTitle())
                 .engDreamTitle(modelGenerateResponse.getEngDreamTitle())
                 .imageUrl(modelGenerateResponse.getImageUrl())
                 .possibleMeanings(modelGenerateResponse.getPossibleMeanings())
                 .recommendedTarotCard(modelGenerateResponse.getRecommendedTarotCard())
-                .created(new Timestamp(System.currentTimeMillis()))
+                .created(curTime)
+                .updated(curTime)
                 .build();
 
-        Dream dream = dreamResponse.toEntity();
         dreamRepository.save(dream);
-        dreamResponse.setDreamId(dream.getDreamId());
-        return dreamResponse;
+        return dream;
 
     }
 
-    public DreamResponse regenerate(DreamRegenerateRequest dreamRegenerateRequest) throws IOException {
+    public Dream regenerate(DreamRegenerateRequest dreamRegenerateRequest) throws IOException {
 
         JSONObject obj = new JSONObject();
         obj.put("dream", dreamRegenerateRequest.getEngDreamTitle());
@@ -59,17 +63,12 @@ public class DreamService {
         // 서버로부터 데이터 읽어오기
         ModelRegenerateResponse modelRegenerateResponse = getModelResponse(conn, ModelRegenerateResponse.class);
 
-        String newImageUrl = modelRegenerateResponse.getImageUrl();
-        DreamResponse dreamResponse = DreamResponse.builder()
-                .imageUrl(newImageUrl)
-                .created(new Timestamp(System.currentTimeMillis()))
-                .build();
-
         Dream dream = dreamRepository.findById(dreamRegenerateRequest.getDreamId());
-        dream.setImageUrl(newImageUrl);
-        dreamRepository.save(dream);
+        dream.setImageUrl(modelRegenerateResponse.getImageUrl());
+        dream.setUpdated(new Timestamp(System.currentTimeMillis()));
 
-        return dreamResponse;
+        dreamRepository.save(dream);
+        return dream;
     }
 
     private <T> T getModelResponse(HttpURLConnection conn, Class<T> valueType) throws IOException {

@@ -33,7 +33,11 @@ public class Dream {
     @Column(columnDefinition = "text")
     private String imageUrl;
 
+    @ElementCollection
+    private List<String> possibleMeanings;
+
     private String recommendedTarotCard;
     private Timestamp created;
+    private Timestamp updated;
 
 }
