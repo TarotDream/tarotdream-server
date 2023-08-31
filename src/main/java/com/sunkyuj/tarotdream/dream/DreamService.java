@@ -26,6 +26,10 @@ public class DreamService {
     public List<Dream> findDreams(){
         return dreamRepository.findAll();
     }
+
+    public Dream findOne(Long dreamId) {
+        return dreamRepository.findById(dreamId);
+    }
     public Dream generate(DreamGenerateRequest dreamGenerateRequest) throws IOException {
 
         JSONObject obj = new JSONObject();
@@ -97,4 +101,6 @@ public class DreamService {
         bw.close();
         return conn;
     }
+
+
 }

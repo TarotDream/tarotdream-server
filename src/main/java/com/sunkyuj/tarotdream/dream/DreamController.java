@@ -22,7 +22,7 @@ public class DreamController {
 
     private final DreamService dreamService;
 
-    @Operation(summary = "전체 타로카드 조회", description = "모든 타로카드를 조회한다 ", tags = { "Dream" })
+    @Operation(summary = "전체 타로몽 카드 조회", description = "모든 타로몽 카드를 조회한다 ", tags = { "Dream" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(array = @ArraySchema(schema = @Schema(implementation = DreamResponse.class))))
     })
@@ -43,6 +43,24 @@ public class DreamController {
             dreamResponseList.add(dreamResponse);
         }
         return dreamResponseList;
+    }
+
+    @Operation(summary = "단일 타로몽 카드 조회", description = "타로몽 카드 하나를 조회한다", tags = { "Dream" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = DreamResponse.class)))
+    })
+    @GetMapping("/{dreamId}")
+    public DreamResponse getPost(@PathVariable("dreamId") Long dreamId) {
+        Dream dream = dreamService.findOne(dreamId);
+        return DreamResponse.builder()
+                .dreamId(dream.getDreamId())
+                .dreamTitle(dream.getDreamTitle())
+                .engDreamTitle(dream.getEngDreamTitle())
+                .imageUrl(dream.getImageUrl())
+                .possibleMeanings(dream.getPossibleMeanings())
+                .recommendedTarotCard(dream.getRecommendedTarotCard())
+                .created(dream.getCreated())
+                .build();
     }
 
     @Operation(summary = "타로카드 생성", description = "사용자가 꿈을 입력하면, 해몽과 꿈 이미지가 생성된다.", tags = { "Dream" })
