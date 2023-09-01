@@ -64,26 +64,28 @@ public class DreamService {
         in.close();
         byte[] response = out.toByteArray();
         System.out.println("response = " + response);
-        // 읽은 파일은 S3 업로드하기 위해 MultipartFile 객체로 변환한다
-        MultipartFile multipartFile = new CustomMultipartFile(response,"image", "image.jpeg", "jpeg", response.length);
-        System.out.println("multipartFile. = " + multipartFile.getOriginalFilename());
-//        BufferedImage image = ImageIO.read(url);
-        String imageS3Url = s3Uploader.upload(multipartFile, "dalle-images");
-//        String imageS3Url = s3Uploader.upload(image, "dalle-images");
+
 
         Timestamp curTime = new Timestamp(System.currentTimeMillis());
 
         Dream dream = Dream.builder()
                 .dreamTitle(modelGenerateResponse.getDreamTitle())
                 .engDreamTitle(modelGenerateResponse.getEngDreamTitle())
-                .imageUrl(imageS3Url)
                 .possibleMeanings(modelGenerateResponse.getPossibleMeanings())
                 .recommendedTarotCard(modelGenerateResponse.getRecommendedTarotCard())
                 .created(curTime)
                 .updated(curTime)
                 .build();
-
         dreamRepository.save(dream);
+        Long dreamId = dream.getDreamId();
+        // 읽은 파일은 S3 업로드하기 위해 MultipartFile 객체로 변환한다
+        MultipartFile multipartFile = new CustomMultipartFile(response,"image"+dreamId, "image"+dreamId+".jpeg", "jpeg", response.length);
+        System.out.println("multipartFile. = " + multipartFile.getOriginalFilename());
+//        BufferedImage image = ImageIO.read(url);
+        String imageS3Url = s3Uploader.upload(multipartFile, "dalle-images");
+//        String imageS3Url = s3Uploader.upload(image, "dalle-images");
+
+        dream.setImageUrl(imageS3Url);
         return dream;
 
     }
