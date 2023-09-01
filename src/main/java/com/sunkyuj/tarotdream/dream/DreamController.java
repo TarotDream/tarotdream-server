@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/dream")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class DreamController {
 
