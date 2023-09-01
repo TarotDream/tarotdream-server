@@ -1,18 +1,25 @@
 package com.sunkyuj.tarotdream.dream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.sunkyuj.tarotdream.common.S3Uploader;
+import com.sunkyuj.tarotdream.common.CustomMultipartFile;
+import com.sunkyuj.tarotdream.common.S3Uploader;
+import com.sunkyuj.tarotdream.dream.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +29,7 @@ import java.util.List;
 public class DreamService {
 
     private final DreamRepository dreamRepository;
+    private final S3Uploader s3Uploader;
     @Value("${url.flask-server-url}")
     private String flaskUrl;
 
@@ -41,12 +49,34 @@ public class DreamService {
         HttpURLConnection conn = getHttpURLConnection(obj, "/dream/generate");
         // 서버로부터 데이터 읽어오기
         ModelGenerateResponse modelGenerateResponse = getModelResponse(conn, ModelGenerateResponse.class);
+
+        // Dalle 이미지 다운
+        URL url = new URL(modelGenerateResponse.getImageUrl());
+        InputStream in = new BufferedInputStream(url.openStream());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024000];
+        int n = 0;
+        while (-1!=(n=in.read(buf)))
+        {
+            out.write(buf, 0, n);
+        }
+        out.close();
+        in.close();
+        byte[] response = out.toByteArray();
+        System.out.println("response = " + response);
+        // 읽은 파일은 S3 업로드하기 위해 MultipartFile 객체로 변환한다
+        MultipartFile multipartFile = new CustomMultipartFile(response,"image", "image.jpeg", "jpeg", response.length);
+        System.out.println("multipartFile. = " + multipartFile.getOriginalFilename());
+//        BufferedImage image = ImageIO.read(url);
+        String imageS3Url = s3Uploader.upload(multipartFile, "dalle-images");
+//        String imageS3Url = s3Uploader.upload(image, "dalle-images");
+
         Timestamp curTime = new Timestamp(System.currentTimeMillis());
 
         Dream dream = Dream.builder()
                 .dreamTitle(modelGenerateResponse.getDreamTitle())
                 .engDreamTitle(modelGenerateResponse.getEngDreamTitle())
-                .imageUrl(modelGenerateResponse.getImageUrl())
+                .imageUrl(imageS3Url)
                 .possibleMeanings(modelGenerateResponse.getPossibleMeanings())
                 .recommendedTarotCard(modelGenerateResponse.getRecommendedTarotCard())
                 .created(curTime)
@@ -102,6 +132,27 @@ public class DreamService {
         bw.flush(); // 버퍼에 담긴 데이터 전달
         bw.close();
         return conn;
+    }
+
+    private BufferedImage imageToBufferedImage(Image im) {
+        BufferedImage bi = new BufferedImage
+                (im.getWidth(null),im.getHeight(null),BufferedImage.TYPE_INT_RGB);
+        Graphics bg = bi.getGraphics();
+        bg.drawImage(im, 0, 0, null);
+        bg.dispose();
+        return bi;
+    }
+
+    private MultipartFile convertBufferedImageToMultipartFile(BufferedImage image) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, "jpeg", out);
+        } catch (IOException e) {
+            log.error("IO Error", e);
+            return null;
+        }
+        byte[] bytes = out.toByteArray();
+        return new CustomMultipartFile(bytes, "image", "image.jpeg", "jpeg", bytes.length);
     }
 
 

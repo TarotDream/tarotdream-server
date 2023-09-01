@@ -1,5 +1,8 @@
 package com.sunkyuj.tarotdream.user;
 
+import com.sunkyuj.tarotdream.user.model.User;
+import com.sunkyuj.tarotdream.user.model.UserLoginRequest;
+import com.sunkyuj.tarotdream.user.model.UserRegisterRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

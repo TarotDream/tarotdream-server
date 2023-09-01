@@ -1,5 +1,6 @@
 package com.sunkyuj.tarotdream.dream;
 
+import com.sunkyuj.tarotdream.dream.model.Dream;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

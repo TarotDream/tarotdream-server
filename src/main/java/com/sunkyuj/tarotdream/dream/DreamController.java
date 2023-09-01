@@ -1,5 +1,9 @@
 package com.sunkyuj.tarotdream.dream;
 
+import com.sunkyuj.tarotdream.dream.model.Dream;
+import com.sunkyuj.tarotdream.dream.model.DreamGenerateRequest;
+import com.sunkyuj.tarotdream.dream.model.DreamRegenerateRequest;
+import com.sunkyuj.tarotdream.dream.model.DreamResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,7 +16,6 @@ import com.sunkyuj.tarotdream.utils.ApiResult;
 import com.sunkyuj.tarotdream.utils.ApiUtils;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
