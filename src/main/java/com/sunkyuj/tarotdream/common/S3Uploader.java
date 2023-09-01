@@ -68,6 +68,7 @@ public class S3Uploader {
         System.out.println("file = " + file);
         System.out.println("file.getOriginalFilename() = " + file.getOriginalFilename());
         File convertFile = new File(file.getOriginalFilename());
+        convertFile.createNewFile();
 //        if(convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
