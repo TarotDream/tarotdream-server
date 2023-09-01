@@ -1,12 +1,10 @@
-package com.sunkyuj.tarotdream.dream;
+package com.sunkyuj.tarotdream.dream.model;
 
-import com.sunkyuj.tarotdream.user.User;
+import com.sunkyuj.tarotdream.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Blob;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

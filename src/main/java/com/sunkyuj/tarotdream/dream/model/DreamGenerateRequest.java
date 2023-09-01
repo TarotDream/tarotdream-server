@@ -1,4 +1,4 @@
-package com.sunkyuj.tarotdream.dream;
+package com.sunkyuj.tarotdream.dream.model;
 
 import lombok.*;
 

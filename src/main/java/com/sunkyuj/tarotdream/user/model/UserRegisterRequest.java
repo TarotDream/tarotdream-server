@@ -1,4 +1,4 @@
-package com.sunkyuj.tarotdream.user;
+package com.sunkyuj.tarotdream.user.model;
 
 import lombok.Getter;
 

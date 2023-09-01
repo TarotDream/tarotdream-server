@@ -1,8 +1,11 @@
-package com.sunkyuj.tarotdream.dream;
+package com.sunkyuj.tarotdream.dream.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -10,14 +13,9 @@ import java.util.List;
 //@Setter
 //@AllArgsConstructor
 //@NoArgsConstructor
-@ToString
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ModelGenerateResponse {
-    private String dreamTitle;
-    private String engDreamTitle;
+public class ModelRegenerateResponse {
     private String imageUrl;
-    private List<String> possibleMeanings;
-    private String recommendedTarotCard;
     private String message;
-//    private int status;
+    private int status;
 }
