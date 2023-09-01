@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,8 @@ import java.util.List;
 public class DreamService {
 
     private final DreamRepository dreamRepository;
-    private final String flaskUrl = "http://43.201.23.0:5000";
+    @Value("${url.flask-server-url}")
+    private String flaskUrl;
 
     public List<Dream> findDreams(){
         return dreamRepository.findAll();

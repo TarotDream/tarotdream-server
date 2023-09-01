@@ -28,7 +28,7 @@ public class DreamController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(array = @ArraySchema(schema = @Schema(implementation = DreamResponse.class))))
     })
-    @GetMapping("/")
+    @GetMapping("")
     public ApiResult<List<DreamResponse>> getDreams() {
         List<Dream> dreams = dreamService.findDreams();
         List<DreamResponse> dreamResponseList = new ArrayList<>();
