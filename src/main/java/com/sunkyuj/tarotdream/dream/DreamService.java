@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class DreamService {
@@ -34,12 +34,14 @@ public class DreamService {
     private String flaskUrl;
 
     public List<Dream> findDreams(){
+        // TODO: 내림차순 정렬, 페이지네이션 적용 필요
         return dreamRepository.findAll();
     }
 
     public Dream findOne(Long dreamId) {
         return dreamRepository.findById(dreamId);
     }
+    @Transactional
     public Dream generate(DreamGenerateRequest dreamGenerateRequest) throws IOException {
 
         JSONObject obj = new JSONObject();
@@ -71,25 +73,23 @@ public class DreamService {
 
     }
 
+    @Transactional
+    public Dream regenerate(Long dreamId) throws IOException {
 
-
-    public Dream regenerate(DreamRegenerateRequest dreamRegenerateRequest) throws IOException {
+        Dream dream = dreamRepository.findById(dreamId);
 
         JSONObject obj = new JSONObject();
-        obj.put("dream", dreamRegenerateRequest.getEngDreamTitle());
-        obj.put("tarot_card", dreamRegenerateRequest.getRecommendedTarotCard());
+        obj.put("dream", dream.getEngDreamTitle());
+        obj.put("tarot_card", dream.getRecommendedTarotCard());
 
         // 서버에 데이터 전달
         HttpURLConnection conn = getHttpURLConnection(obj, "/dream/regenerate");
         // 서버로부터 데이터 읽어오기
         ModelRegenerateResponse modelRegenerateResponse = getModelResponse(conn, ModelRegenerateResponse.class);
 
-        Dream dream = dreamRepository.findById(dreamRegenerateRequest.getDreamId());
 
         MultipartFile dalleImage = downloadDalleImage(modelRegenerateResponse.getImageUrl(), dream.getDreamId());
         String imageS3Url = s3Uploader.upload(dalleImage, "dalle-images");
-
-        dream.setImageUrl(imageS3Url);
         dream.setUpdated(new Timestamp(System.currentTimeMillis()));
 
         dreamRepository.save(dream);

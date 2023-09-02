@@ -96,7 +96,7 @@ public class DreamController {
     })
     @PostMapping("/regenerate")
     public ApiResult<DreamResponse> regenerateDream(@RequestBody DreamRegenerateRequest dreamRegenerateRequest) throws IOException {
-        Dream regeneratedDream = dreamService.regenerate(dreamRegenerateRequest);
+        Dream regeneratedDream = dreamService.regenerate(dreamRegenerateRequest.getDreamId());
         DreamResponse dreamResponse = DreamResponse.builder()
                 .dreamId(regeneratedDream.getDreamId())
                 .dreamTitle(regeneratedDream.getDreamTitle())

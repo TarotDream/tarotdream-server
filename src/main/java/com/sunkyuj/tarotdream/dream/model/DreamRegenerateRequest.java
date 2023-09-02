@@ -9,6 +9,4 @@ import lombok.*;
 @AllArgsConstructor
 public class DreamRegenerateRequest {
     private Long dreamId;
-    private String engDreamTitle;
-    private String recommendedTarotCard;
 }
