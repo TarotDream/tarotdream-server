@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -49,9 +50,12 @@ public class S3Uploader {
     }
 
     private String putS3(File uploadFile, String fileName) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setCacheControl("no-cache");
         amazonS3Client.putObject(
                 new PutObjectRequest(bucket, fileName, uploadFile)
                         .withCannedAcl(CannedAccessControlList.PublicRead)	// PublicRead 권한으로 업로드 됨
+                        .withMetadata(objectMetadata)
         );
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
