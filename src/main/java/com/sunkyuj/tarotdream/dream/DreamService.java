@@ -50,24 +50,8 @@ public class DreamService {
         // 서버로부터 데이터 읽어오기
         ModelGenerateResponse modelGenerateResponse = getModelResponse(conn, ModelGenerateResponse.class);
 
-        // Dalle 이미지 다운
-        URL url = new URL(modelGenerateResponse.getImageUrl());
-        InputStream in = new BufferedInputStream(url.openStream());
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024000];
-        int n = 0;
-        while (-1!=(n=in.read(buf)))
-        {
-            out.write(buf, 0, n);
-        }
-        out.close();
-        in.close();
-        byte[] response = out.toByteArray();
-        System.out.println("response = " + response);
-
-
+        // TODO: Dream 생성 시 created, update를 클래스 내부에서 만들도록 변경
         Timestamp curTime = new Timestamp(System.currentTimeMillis());
-
         Dream dream = Dream.builder()
                 .dreamTitle(modelGenerateResponse.getDreamTitle())
                 .engDreamTitle(modelGenerateResponse.getEngDreamTitle())
@@ -77,18 +61,17 @@ public class DreamService {
                 .updated(curTime)
                 .build();
         dreamRepository.save(dream);
+
         Long dreamId = dream.getDreamId();
         // 읽은 파일은 S3 업로드하기 위해 MultipartFile 객체로 변환한다
-        MultipartFile multipartFile = new CustomMultipartFile(response,"image"+dreamId, "image"+dreamId+".jpeg", "jpeg", response.length);
-        System.out.println("multipartFile. = " + multipartFile.getOriginalFilename());
-//        BufferedImage image = ImageIO.read(url);
-        String imageS3Url = s3Uploader.upload(multipartFile, "dalle-images");
-//        String imageS3Url = s3Uploader.upload(image, "dalle-images");
-
+        MultipartFile dalleImage = downloadDalleImage(modelGenerateResponse.getImageUrl(), dreamId);
+        String imageS3Url = s3Uploader.upload(dalleImage, "dalle-images");
         dream.setImageUrl(imageS3Url);
         return dream;
 
     }
+
+
 
     public Dream regenerate(DreamRegenerateRequest dreamRegenerateRequest) throws IOException {
 
@@ -102,7 +85,11 @@ public class DreamService {
         ModelRegenerateResponse modelRegenerateResponse = getModelResponse(conn, ModelRegenerateResponse.class);
 
         Dream dream = dreamRepository.findById(dreamRegenerateRequest.getDreamId());
-        dream.setImageUrl(modelRegenerateResponse.getImageUrl());
+
+        MultipartFile dalleImage = downloadDalleImage(modelRegenerateResponse.getImageUrl(), dream.getDreamId());
+        String imageS3Url = s3Uploader.upload(dalleImage, "dalle-images");
+
+        dream.setImageUrl(imageS3Url);
         dream.setUpdated(new Timestamp(System.currentTimeMillis()));
 
         dreamRepository.save(dream);
@@ -136,25 +123,23 @@ public class DreamService {
         return conn;
     }
 
-    private BufferedImage imageToBufferedImage(Image im) {
-        BufferedImage bi = new BufferedImage
-                (im.getWidth(null),im.getHeight(null),BufferedImage.TYPE_INT_RGB);
-        Graphics bg = bi.getGraphics();
-        bg.drawImage(im, 0, 0, null);
-        bg.dispose();
-        return bi;
-    }
-
-    private MultipartFile convertBufferedImageToMultipartFile(BufferedImage image) {
+    private CustomMultipartFile downloadDalleImage(String dalleImageUrl, Long dreamId) throws IOException {
+        // Dalle 이미지 다운
+        URL url = new URL(dalleImageUrl);
+        InputStream in = new BufferedInputStream(url.openStream());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(image, "jpeg", out);
-        } catch (IOException e) {
-            log.error("IO Error", e);
-            return null;
+        byte[] buf = new byte[102400];
+        int n = 0;
+        while (-1!=(n=in.read(buf)))
+        {
+            out.write(buf, 0, n);
         }
-        byte[] bytes = out.toByteArray();
-        return new CustomMultipartFile(bytes, "image", "image.jpeg", "jpeg", bytes.length);
+        out.close();
+        in.close();
+        byte[] dalleImage = out.toByteArray();
+
+        return new CustomMultipartFile(dalleImage,"image"+dreamId, "image"+dreamId+".jpeg", "jpeg", dalleImage.length);
+
     }
 
 
